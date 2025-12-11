@@ -20,7 +20,7 @@ impl Status {
 
     pub fn to_meowssage(&self) -> &str {
         match self {
-            Status::Clean => "😺 Purrfect! All tidy.",
+            Status::Clean => "😺 Purrfect! As clean as my furr.",
             Status::Unstaged => "🐾 You’ve been scratching things again!",
             Status::Staged => "😸 Ready to pounce on that commit!",
         }
