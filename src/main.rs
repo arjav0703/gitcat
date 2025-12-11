@@ -1,7 +1,7 @@
-use anyhow::Result;
-use std::process::Command;
-
+mod cli;
 mod git;
+
+use anyhow::Result;
 use git::Git;
 
 #[tokio::main]
@@ -12,7 +12,13 @@ async fn main() -> Result<()> {
         return Ok(());
     }
 
-    let status = Git::status().await?;
-    dbg!(status);
+    let matches = cli::cli().get_matches();
+    match matches.subcommand() {
+        Some(("hru", _)) => {
+            let status = Git::status().await?;
+            println!("{:?}", status);
+        }
+        _ => unreachable!(),
+    }
     Ok(())
 }
