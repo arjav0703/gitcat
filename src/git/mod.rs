@@ -45,4 +45,17 @@ impl Git {
         }
         Ok(())
     }
+
+    pub async fn pull() -> Result<()> {
+        let output = Command::new("git").arg("pull").output()?;
+        if output.status.success() {
+            println!("⬇️ Fetched the latest meow updates from meowland!");
+        } else {
+            println!(
+                "🐾 Pulling updates from meowland failed:( {}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+        }
+        Ok(())
+    }
 }

@@ -11,4 +11,5 @@ pub fn cli() -> Command {
                 .arg(arg!(<MESSAGE> "The commit message")),
         )
         .subcommand(Command::new("push").about("Push commits to the default remote repository"))
+        .subcommand(Command::new("pull").about("Pull updates from the default remote repository"))
 }

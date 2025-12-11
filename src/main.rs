@@ -25,6 +25,9 @@ async fn main() -> Result<()> {
         Some(("push", _)) => {
             Git::push().await?;
         }
+        Some(("pull", _)) => {
+            Git::pull().await?;
+        }
         _ => unreachable!(),
     }
     Ok(())
