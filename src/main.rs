@@ -16,7 +16,7 @@ async fn main() -> Result<()> {
     match matches.subcommand() {
         Some(("hru", _)) => {
             let status = Git::status().await?;
-            println!("{:?}", status);
+            println!("{}", status.to_meowssage());
         }
         _ => unreachable!(),
     }
