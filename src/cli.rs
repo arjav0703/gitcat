@@ -8,7 +8,11 @@ pub fn cli() -> Command {
         .subcommand(
             Command::new("meow")
                 .about("Commit changes with a cat-themed message")
-                .arg(arg!(<MESSAGE> "The commit message")),
+                .arg(
+                    arg!([ARGS] ... "Git commit arguments (e.g., -am 'message', --amend)")
+                        .allow_hyphen_values(true)
+                        .trailing_var_arg(true),
+                ),
         )
         .subcommand(Command::new("push").about("Push commits to the default remote repository"))
         .subcommand(Command::new("pull").about("Pull updates from the default remote repository"))

@@ -19,8 +19,12 @@ async fn main() -> Result<()> {
             println!("{}", status.to_meowssage());
         }
         Some(("meow", sub_m)) => {
-            let message = sub_m.get_one::<String>("MESSAGE").unwrap();
-            Git::commit(message).await?;
+            let args: Vec<String> = sub_m
+                .get_many::<String>("ARGS")
+                .unwrap_or_default()
+                .map(|s| s.to_string())
+                .collect();
+            Git::commit(&args).await?;
         }
         Some(("push", _)) => {
             Git::push().await?;

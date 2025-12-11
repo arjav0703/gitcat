@@ -17,13 +17,16 @@ impl Git {
         Ok(Status::from_str(&String::from_utf8_lossy(&output.stdout)))
     }
 
-    pub async fn commit(message: &str) -> Result<()> {
-        Command::new("git").args(["add", "."]).output()?;
-        let output = Command::new("git")
-            .args(["commit", "-am", message])
-            .output()?;
+    pub async fn commit(args: &[String]) -> Result<()> {
+        let mut cmd = Command::new("git");
+        cmd.arg("commit");
+        for arg in args {
+            cmd.arg(arg);
+        }
+        let output = cmd.output()?;
         if output.status.success() {
-            println!("😺 Committed with message: {}", message);
+            println!("😺 Committed successfully!");
+            println!("{}", String::from_utf8_lossy(&output.stdout));
         } else {
             println!(
                 "🐾 Commit failed:( {}",
