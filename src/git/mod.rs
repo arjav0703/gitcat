@@ -18,4 +18,19 @@ impl Git {
         let status = Status::from_str(&String::from_utf8_lossy(&output.stdout));
         Ok(status)
     }
+
+    pub async fn commit(message: &str) -> Result<()> {
+        let output = Command::new("git")
+            .args(["commit", "-am", message])
+            .output()?;
+        if output.status.success() {
+            println!("😺 Committed with message: {}", message);
+        } else {
+            println!(
+                "🐾 Commit failed:( {}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+        }
+        Ok(())
+    }
 }
