@@ -41,7 +41,7 @@ impl Git {
     pub async fn push() -> Result<()> {
         let output = Command::new("git").arg("push").output()?;
         if output.status.success() {
-            println!("🚀 Pushed your code to meowland!");
+            println!("🚀 Pushed your beautiful code to meowland!");
         } else {
             println!(
                 "🐾 Journey to meowland failed:( {}",
