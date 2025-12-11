@@ -18,6 +18,20 @@ async fn main() -> Result<()> {
             let status = Git::status().await?;
             println!("{}", status.to_meowssage());
         }
+        Some(("meow", sub_m)) => {
+            let message = sub_m.get_one::<String>("MESSAGE").unwrap();
+            let output = std::process::Command::new("git")
+                .args(["commit", "-am", message])
+                .output()?;
+            if output.status.success() {
+                println!("😺 Committed with message: {}", message);
+            } else {
+                println!(
+                    "🐾 Commit failed: {}",
+                    String::from_utf8_lossy(&output.stderr)
+                );
+            }
+        }
         _ => unreachable!(),
     }
     Ok(())
