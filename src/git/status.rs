@@ -9,7 +9,7 @@ impl Status {
     pub fn from_str(s: &str) -> Self {
         if s.contains("nothing to commit, working tree clean") {
             Status::Clean
-        } else if s.contains("Changes not staged for commit") {
+        } else if s.contains("Changes not staged for commit") | s.contains("Untracked files") {
             Status::Unstaged
         } else if s.contains("Changes to be committed") {
             Status::Staged
