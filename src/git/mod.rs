@@ -25,8 +25,10 @@ impl Git {
         }
         let output = cmd.output()?;
         if output.status.success() {
-            println!("😺 Committed successfully!");
+            println!("😺 Your changes are ready to be sent to meowland!");
             println!("{}", String::from_utf8_lossy(&output.stdout));
+        } else if String::from_utf8_lossy(&output.stdout).contains("nothing to commit") {
+            println!("😺 Nothing to commit! Your code is already purrfect!");
         } else {
             println!(
                 "🐾 Commit failed:( {}",
