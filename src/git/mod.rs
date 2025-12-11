@@ -18,6 +18,7 @@ impl Git {
     }
 
     pub async fn commit(message: &str) -> Result<()> {
+        Command::new("git").args(["add", "."]).output()?;
         let output = Command::new("git")
             .args(["commit", "-am", message])
             .output()?;
