@@ -9,14 +9,12 @@ pub struct Git {}
 impl Git {
     pub fn repo_check() -> Result<bool> {
         use std::fs;
-        let is_repo = fs::metadata(".git").is_ok();
-        Ok(is_repo)
+        Ok(fs::metadata(".git").is_ok())
     }
 
     pub async fn status() -> Result<Status> {
         let output = Command::new("git").arg("status").output()?;
-        let status = Status::from_str(&String::from_utf8_lossy(&output.stdout));
-        Ok(status)
+        Ok(Status::from_str(&String::from_utf8_lossy(&output.stdout)))
     }
 
     pub async fn commit(message: &str) -> Result<()> {
