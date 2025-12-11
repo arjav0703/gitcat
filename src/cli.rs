@@ -10,4 +10,5 @@ pub fn cli() -> Command {
                 .about("Commit changes with a cat-themed message")
                 .arg(arg!(<MESSAGE> "The commit message")),
         )
+        .subcommand(Command::new("push").about("Push commits to the default remote repository"))
 }

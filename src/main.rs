@@ -22,6 +22,9 @@ async fn main() -> Result<()> {
             let message = sub_m.get_one::<String>("MESSAGE").unwrap();
             Git::commit(message).await?;
         }
+        Some(("push", _)) => {
+            Git::push().await?;
+        }
         _ => unreachable!(),
     }
     Ok(())
