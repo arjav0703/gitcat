@@ -47,6 +47,12 @@ async fn main() -> Result<()> {
                 .expect("Branch argument is required");
             Git::checkout(branch).await?;
         }
+        Some(("scratch", sub_m)) => {
+            let branch = sub_m
+                .get_one::<String>("BRANCH")
+                .expect("Branch argument is required");
+            Git::create_branch(branch).await?;
+        }
         _ => unreachable!(),
     }
     Ok(())

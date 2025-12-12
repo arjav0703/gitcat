@@ -41,4 +41,13 @@ pub fn cli() -> Command {
                         .allow_hyphen_values(true),
                 ),
         )
+        .subcommand(
+            Command::new("scratch")
+                .about("Create a new branch (and checkout to it)")
+                .arg(
+                    arg!([BRANCH] "The name of the new branch")
+                        .required(true)
+                        .allow_hyphen_values(true),
+                ),
+        )
 }

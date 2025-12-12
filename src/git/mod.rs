@@ -83,4 +83,22 @@ impl Git {
         }
         Ok(())
     }
+
+    pub async fn create_branch(branch: &str) -> Result<()> {
+        let output = Command::new("git")
+            .arg("checkout")
+            .arg("-b")
+            .arg(branch)
+            .output()?;
+        if output.status.success() {
+            println!("😺 Created and pounced to new branch '{}'", branch);
+        } else {
+            println!(
+                "🐾 Creating branch '{}' failed:( {}",
+                branch,
+                String::from_utf8_lossy(&output.stderr)
+            );
+        }
+        Ok(())
+    }
 }
