@@ -30,14 +30,6 @@ impl Status {
             (false, false) => Status::Clean,
         }
     }
-
-    pub fn is_clean(&self) -> bool {
-        matches!(self, Status::Clean)
-    }
-
-    pub fn has_changes(&self) -> bool {
-        !self.is_clean()
-    }
 }
 
 impl fmt::Display for Status {

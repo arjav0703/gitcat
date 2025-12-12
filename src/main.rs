@@ -63,7 +63,7 @@ async fn main() -> Result<()> {
             let mood_value = mood
                 .get_one::<String>("MOOD")
                 .ok_or_else(|| error::GitCatError::MissingArgument("MOOD".to_string()))?;
-            repo.set_mood(mood_value).await;
+            let _ = repo.set_mood(mood_value).await;
         }
         _ => unreachable!("Unhandled subcommand"),
     }

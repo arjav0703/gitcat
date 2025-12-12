@@ -16,10 +16,10 @@ pub enum CatMood {
     Chaotic,
 }
 
-impl ToString for CatMood {
-    fn to_string(&self) -> String {
+impl std::fmt::Display for CatMood {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            CatMood::Chaotic => "chaotic".to_string(),
+            CatMood::Chaotic => write!(f, "chaotic"),
         }
     }
 }
@@ -104,12 +104,6 @@ impl Config {
     pub fn add_success_msg(&self) -> &str {
         match self.catmood {
             CatMood::Chaotic => "😸 Files added to the staging area! Ready to pounce >//<",
-        }
-    }
-
-    pub fn error_prefix(&self) -> &str {
-        match self.catmood {
-            CatMood::Chaotic => "😿 whoops! Something went wrong: ",
         }
     }
 }

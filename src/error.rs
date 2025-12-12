@@ -3,7 +3,6 @@ use std::fmt;
 #[derive(Debug)]
 pub enum GitCatError {
     CommandFailed { command: String, stderr: String },
-    NotARepository,
     GitError(String),
     Io(std::io::Error),
     Utf8(std::string::FromUtf8Error),
@@ -15,9 +14,6 @@ impl fmt::Display for GitCatError {
         match self {
             GitCatError::CommandFailed { command, stderr } => {
                 write!(f, "Command '{}' failed: {}", command, stderr)
-            }
-            GitCatError::NotARepository => {
-                write!(f, "Not a git repository")
             }
             GitCatError::GitError(msg) => write!(f, "Git error: {}", msg),
             GitCatError::Io(err) => write!(f, "IO error: {}", err),
