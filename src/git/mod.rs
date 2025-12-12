@@ -1,148 +1,179 @@
-use anyhow::Result;
-use std::{io::stdout, process::Command};
+use crate::command::CommandExecutor;
+use crate::config::Config;
+use crate::error::{GitCatError, Result};
+use std::path::Path;
 
 mod status;
-use status::Status;
+pub use status::Status;
 
-pub struct Git {}
+pub struct GitRepository {
+    config: Config,
+}
 
-impl Git {
-    pub fn repo_check() -> Result<bool> {
-        use std::fs;
-        Ok(fs::metadata(".git").is_ok())
+impl GitRepository {
+    pub fn new() -> Self {
+        Self {
+            config: Config::new(),
+        }
     }
 
-    pub async fn status() -> Result<Status> {
-        let output = Command::new("git").arg("status").output()?;
-        Ok(Status::from_str(&String::from_utf8_lossy(&output.stdout)))
+    pub fn is_repository() -> Result<bool> {
+        Ok(Path::new(".git").exists())
     }
 
-    pub async fn commit(args: &[String]) -> Result<()> {
-        let mut cmd = Command::new("git");
-        cmd.arg("commit");
-        for arg in args {
-            cmd.arg(arg);
-        }
-        let output = cmd.output()?;
-        if output.status.success() {
-            println!("😺 Your changes are ready to be sent to meowland!");
-            println!("{}", String::from_utf8_lossy(&output.stdout));
-        } else if String::from_utf8_lossy(&output.stdout).contains("nothing to commit") {
-            println!("😺 Nothing to commit! Your code is already purrfect!");
-        } else {
-            println!(
-                "🐾 Commit failed:( {}",
-                String::from_utf8_lossy(&output.stderr)
-            );
-        }
+    pub async fn status(&self) -> Result<Status> {
+        let output = CommandExecutor::execute(&["status"])?;
+        let stdout = CommandExecutor::stdout_string(&output)?;
+        Ok(Status::from_output(&stdout))
+    }
+
+    pub async fn display_status(&self) -> Result<()> {
+        let status = self.status().await?;
+        let message = match status {
+            Status::Clean => self.config.status_clean_msg(),
+            Status::Unstaged => self.config.status_unstaged_msg(),
+            Status::Staged => self.config.status_staged_msg(),
+            Status::Mixed => self.config.status_staged_msg(), // Both staged and unstaged
+            Status::Conflict => "⚠️  Merge conflicts detected!",
+        };
+        println!("{}", message);
         Ok(())
     }
 
-    pub async fn push(args: &[String]) -> Result<()> {
-        let output = Command::new("git").arg("push").args(args).output()?;
+    pub async fn commit(&self, args: &[String]) -> Result<()> {
+        let output = CommandExecutor::execute_with_args(&["commit"], args)?;
 
-        if output.status.success() {
-            if String::from_utf8_lossy(&output.stdout).contains("Everything up-to-date") {
-                println!("😺 Everything is already up-to-date in meowland!");
-                return Ok(());
+        if CommandExecutor::is_success(&output) {
+            let stdout = CommandExecutor::stdout_string(&output)?;
+            println!("{}", self.config.commit_success_msg());
+            println!("{}", stdout);
+        } else {
+            let stdout = CommandExecutor::stdout_string(&output)?;
+            if stdout.contains("nothing to commit") {
+                println!("{}", self.config.commit_nothing_msg());
+            } else {
+                let stderr = CommandExecutor::stderr_string(&output)?;
+                return Err(GitCatError::CommandFailed {
+                    command: "commit".to_string(),
+                    stderr,
+                });
             }
-
-            println!("🚀 Pushed your beautiful code to meowland!");
-        } else {
-            println!(
-                "🐾 Journey to meowland failed:( {}",
-                String::from_utf8_lossy(&output.stderr)
-            );
         }
         Ok(())
     }
 
-    pub async fn pull(args: &[String]) -> Result<()> {
-        let output = Command::new("git").arg("pull").args(args).output()?;
-        if output.status.success() {
-            println!("⬇️ Fetched the latest meow updates from meowland!");
+    pub async fn push(&self, args: &[String]) -> Result<()> {
+        let output = CommandExecutor::execute_with_args(&["push"], args)?;
+
+        if CommandExecutor::is_success(&output) {
+            let stdout = CommandExecutor::stdout_string(&output)?;
+            if stdout.contains("Everything up-to-date") {
+                println!("{}", self.config.push_uptodate_msg());
+            } else {
+                println!("{}", self.config.push_success_msg());
+            }
         } else {
-            println!(
-                "🐾 Pulling updates from meowland failed:( {}",
-                String::from_utf8_lossy(&output.stderr)
-            );
+            let stderr = CommandExecutor::stderr_string(&output)?;
+            return Err(GitCatError::CommandFailed {
+                command: "push".to_string(),
+                stderr,
+            });
         }
         Ok(())
     }
 
-    pub async fn checkout(branch: &str) -> Result<()> {
-        let output = Command::new("git").arg("checkout").arg(branch).output()?;
-        if output.status.success() {
-            println!("😺 Pounced to branch '{}'", branch);
+    pub async fn pull(&self, args: &[String]) -> Result<()> {
+        let output = CommandExecutor::execute_with_args(&["pull"], args)?;
+
+        if CommandExecutor::is_success(&output) {
+            println!("{}", self.config.pull_success_msg());
         } else {
-            println!(
-                "🐾 Pouncing to branch '{}' failed:( {}",
-                branch,
-                String::from_utf8_lossy(&output.stderr)
-            );
+            let stderr = CommandExecutor::stderr_string(&output)?;
+            return Err(GitCatError::CommandFailed {
+                command: "pull".to_string(),
+                stderr,
+            });
         }
         Ok(())
     }
 
-    pub async fn create_branch(branch: &str) -> Result<()> {
-        let output = Command::new("git")
-            .arg("checkout")
-            .arg("-b")
-            .arg(branch)
-            .output()?;
-        if output.status.success() {
-            println!("😺 Created and pounced to new branch '{}'", branch);
+    pub async fn checkout(&self, branch: &str) -> Result<()> {
+        let output = CommandExecutor::execute(&["checkout", branch])?;
+
+        if CommandExecutor::is_success(&output) {
+            println!("{}", self.config.checkout_success_msg(branch));
         } else {
-            println!(
-                "🐾 Creating branch '{}' failed:( {}",
-                branch,
-                String::from_utf8_lossy(&output.stderr)
-            );
+            let stderr = CommandExecutor::stderr_string(&output)?;
+            return Err(GitCatError::CommandFailed {
+                command: format!("checkout {}", branch),
+                stderr,
+            });
         }
         Ok(())
     }
 
-    pub async fn diff(args: &[String]) -> Result<()> {
-        Command::new("git")
-            .arg("diff")
-            .args(args)
-            .stdout(stdout())
-            .output()?;
-        Ok(())
-    }
+    pub async fn create_branch(&self, branch: &str) -> Result<()> {
+        let output = CommandExecutor::execute(&["checkout", "-b", branch])?;
 
-    pub async fn stash() -> Result<()> {
-        let output = Command::new("git").arg("stash").output()?;
-        if output.status.success() {
-            println!("Your changes will be safe in my dreams 😴💤!");
+        if CommandExecutor::is_success(&output) {
+            println!("{}", self.config.branch_create_success_msg(branch));
         } else {
-            println!(
-                "🐾 Stashing changes failed:( {}",
-                String::from_utf8_lossy(&output.stderr)
-            );
+            let stderr = CommandExecutor::stderr_string(&output)?;
+            return Err(GitCatError::CommandFailed {
+                command: format!("checkout -b {}", branch),
+                stderr,
+            });
         }
         Ok(())
     }
 
-    pub async fn unstash() -> Result<()> {
-        let output = Command::new("git").arg("stash").arg("pop").output()?;
-        if output.status.success() {
-            println!("Welcome back to reality! Your changes are restored 😺!");
+    pub async fn diff(&self, args: &[String]) -> Result<()> {
+        let mut base_args = vec!["diff"];
+        let args_refs: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        base_args.extend(args_refs);
+
+        CommandExecutor::execute_interactive(&base_args)?;
+        Ok(())
+    }
+
+    pub async fn stash(&self) -> Result<()> {
+        let output = CommandExecutor::execute(&["stash"])?;
+
+        if CommandExecutor::is_success(&output) {
+            println!("{}", self.config.stash_success_msg());
         } else {
-            println!(
-                "🐾 Unstashing changes failed:( {}",
-                String::from_utf8_lossy(&output.stderr)
-            );
+            let stderr = CommandExecutor::stderr_string(&output)?;
+            return Err(GitCatError::CommandFailed {
+                command: "stash".to_string(),
+                stderr,
+            });
         }
         Ok(())
     }
 
-    pub async fn show_stash_list() -> Result<()> {
-        Command::new("git")
-            .arg("stash")
-            .arg("list")
-            .stdout(stdout())
-            .output()?;
+    pub async fn unstash(&self) -> Result<()> {
+        let output = CommandExecutor::execute(&["stash", "pop"])?;
+
+        if CommandExecutor::is_success(&output) {
+            println!("{}", self.config.unstash_success_msg());
+        } else {
+            let stderr = CommandExecutor::stderr_string(&output)?;
+            return Err(GitCatError::CommandFailed {
+                command: "stash pop".to_string(),
+                stderr,
+            });
+        }
         Ok(())
+    }
+
+    pub async fn show_stash_list(&self) -> Result<()> {
+        CommandExecutor::execute_interactive(&["stash", "list"])?;
+        Ok(())
+    }
+}
+
+impl Default for GitRepository {
+    fn default() -> Self {
+        Self::new()
     }
 }

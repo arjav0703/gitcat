@@ -1,58 +1,67 @@
 mod cli;
+mod command;
+mod config;
+mod error;
 mod git;
 
-use anyhow::Result;
 use cli::ArgMatchesExt;
-use git::Git;
+use error::Result;
+use git::GitRepository;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let is_repo = Git::repo_check()?;
-    if !is_repo {
-        println!("Not a git repository.");
-        return Ok(());
+    // Check if we're in a git repository
+    if !GitRepository::is_repository()? {
+        eprintln!("Not a git repository.");
+        std::process::exit(1);
     }
 
+    // Initialize git repository manager
+    let repo = GitRepository::new();
+
+    // Parse CLI arguments
     let matches = cli::cli().get_matches();
+
+    // Dispatch commands
     match matches.subcommand() {
         Some(("hru", _)) => {
-            let status = Git::status().await?;
-            println!("{}", status.to_meowssage());
+            repo.display_status().await?;
         }
         Some(("meow", sub_m)) => {
-            Git::commit(&sub_m.get_args()).await?;
+            repo.commit(&sub_m.get_args()).await?;
         }
         Some(("push", args)) => {
-            Git::push(&args.get_args()).await?;
+            repo.push(&args.get_args()).await?;
         }
         Some(("pull", args)) => {
-            Git::pull(&args.get_args()).await?;
+            repo.pull(&args.get_args()).await?;
         }
         Some(("pounce", sub_m)) => {
             let branch = sub_m
                 .get_one::<String>("BRANCH")
-                .expect("Branch argument is required");
-            Git::checkout(branch).await?;
+                .ok_or_else(|| error::GitCatError::MissingArgument("BRANCH".to_string()))?;
+            repo.checkout(branch).await?;
         }
         Some(("scratch", sub_m)) => {
             let branch = sub_m
                 .get_one::<String>("BRANCH")
-                .expect("Branch argument is required");
-            Git::create_branch(branch).await?;
+                .ok_or_else(|| error::GitCatError::MissingArgument("BRANCH".to_string()))?;
+            repo.create_branch(branch).await?;
         }
         Some(("sniff", args)) => {
-            Git::diff(&args.get_args()).await?;
+            repo.diff(&args.get_args()).await?;
         }
         Some(("nap", _)) => {
-            Git::stash().await?;
+            repo.stash().await?;
         }
         Some(("wake", _)) => {
-            Git::unstash().await?;
+            repo.unstash().await?;
         }
         Some(("dreams", _)) => {
-            Git::show_stash_list().await?;
+            repo.show_stash_list().await?;
         }
-        _ => unreachable!(),
+        _ => unreachable!("Unhandled subcommand"),
     }
+
     Ok(())
 }
