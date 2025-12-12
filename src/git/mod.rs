@@ -1,5 +1,8 @@
 use anyhow::Result;
-use std::process::Command;
+use std::{
+    io::{stdin, stdout},
+    process::Command,
+};
 
 mod status;
 use status::Status;
@@ -99,6 +102,15 @@ impl Git {
                 String::from_utf8_lossy(&output.stderr)
             );
         }
+        Ok(())
+    }
+
+    pub async fn diff(args: &[String]) -> Result<()> {
+        Command::new("git")
+            .arg("diff")
+            .args(args)
+            .stdout(stdout())
+            .output()?;
         Ok(())
     }
 }

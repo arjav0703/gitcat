@@ -50,4 +50,11 @@ pub fn cli() -> Command {
                         .allow_hyphen_values(true),
                 ),
         )
+        .subcommand(
+            Command::new("sniff").about("Show the git diff").arg(
+                arg!([ARGS] ... "Git diff arguments (e.g., HEAD~1, --stat)")
+                    .allow_hyphen_values(true)
+                    .trailing_var_arg(true),
+            ),
+        )
 }

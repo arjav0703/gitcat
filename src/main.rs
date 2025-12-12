@@ -53,6 +53,9 @@ async fn main() -> Result<()> {
                 .expect("Branch argument is required");
             Git::create_branch(branch).await?;
         }
+        Some(("sniff", args)) => {
+            Git::diff(&args.get_args()).await?;
+        }
         _ => unreachable!(),
     }
     Ok(())
