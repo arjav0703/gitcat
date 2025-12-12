@@ -110,6 +110,14 @@ impl Config {
         }
     }
 
+    pub fn add_success_msg(&self) -> &str {
+        if self.cat_themed {
+            "😸 Files added to the staging area! Ready to pounce!"
+        } else {
+            "✓ Files added to staging area"
+        }
+    }
+
     pub fn error_prefix(&self) -> &str {
         if self.cat_themed { "🐾" } else { "✗" }
     }

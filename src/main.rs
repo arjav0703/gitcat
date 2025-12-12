@@ -10,25 +10,24 @@ use git::GitRepository;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // Check if we're in a git repository
     if !GitRepository::is_repository()? {
         eprintln!("Not a git repository.");
         std::process::exit(1);
     }
 
-    // Initialize git repository manager
     let repo = GitRepository::new();
 
-    // Parse CLI arguments
     let matches = cli::cli().get_matches();
 
-    // Dispatch commands
     match matches.subcommand() {
         Some(("hru", _)) => {
             repo.display_status().await?;
         }
         Some(("meow", sub_m)) => {
             repo.commit(&sub_m.get_args()).await?;
+        }
+        Some(("touch", args)) => {
+            repo.add(&args.get_args()).await?;
         }
         Some(("push", args)) => {
             repo.push(&args.get_args()).await?;

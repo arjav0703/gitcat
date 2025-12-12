@@ -40,6 +40,21 @@ impl GitRepository {
         Ok(())
     }
 
+    pub async fn add(&self, args: &[String]) -> Result<()> {
+        let output = CommandExecutor::execute_with_args(&["add"], args)?;
+
+        if CommandExecutor::is_success(&output) {
+            println!("{}", self.config.add_success_msg());
+        } else {
+            let stderr = CommandExecutor::stderr_string(&output)?;
+            return Err(GitCatError::CommandFailed {
+                command: "add".to_string(),
+                stderr,
+            });
+        }
+        Ok(())
+    }
+
     pub async fn commit(&self, args: &[String]) -> Result<()> {
         let output = CommandExecutor::execute_with_args(&["commit"], args)?;
 

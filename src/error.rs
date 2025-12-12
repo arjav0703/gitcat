@@ -1,6 +1,5 @@
 use std::fmt;
 
-/// Custom error type for gitcat application
 #[derive(Debug)]
 pub enum GitCatError {
     CommandFailed { command: String, stderr: String },

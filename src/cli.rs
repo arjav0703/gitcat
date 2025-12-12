@@ -28,6 +28,15 @@ pub fn cli() -> Command {
                 ),
         )
         .subcommand(
+            Command::new("touch")
+                .about("Add files to the staging area")
+                .arg(
+                    arg!([ARGS] ... "Git add arguments (e.g., ., file.txt)")
+                        .allow_hyphen_values(true)
+                        .trailing_var_arg(true),
+                ),
+        )
+        .subcommand(
             Command::new("push")
                 .about("Push commits to the default remote repository")
                 .arg(
