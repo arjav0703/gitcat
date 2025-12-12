@@ -71,6 +71,9 @@ async fn main() -> Result<()> {
                 .ok_or_else(|| error::GitCatError::MissingArgument("PATH".to_string()))?;
             repo.create_repository(dir_value).await?;
         }
+        Some(("steal", args)) => {
+            repo.clone_repository(&args.get_args()).await?;
+        }
         _ => unreachable!("Unhandled subcommand"),
     }
 

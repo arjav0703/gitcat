@@ -98,4 +98,13 @@ pub fn cli() -> Command {
                         .allow_hyphen_values(true),
                 ),
         )
+        .subcommand(
+            Command::new("steal")
+                .about("Clone a repository from a given URL")
+                .arg(
+                    arg!([ARGS] ... "Git clone argumnents (e.g., <repo_url>, --depth 1)")
+                        .allow_hyphen_values(true)
+                        .trailing_var_arg(true),
+                ),
+        )
 }

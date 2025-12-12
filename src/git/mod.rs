@@ -229,6 +229,26 @@ impl GitRepository {
         }
         Ok(())
     }
+
+    pub async fn clone_repository(&self, args: &[String]) -> Result<()> {
+        if args.is_empty() {
+            return Err(GitCatError::MissingArgument("REPO_URL".to_string()));
+        }
+        let repo_url = &args[0];
+
+        let output = CommandExecutor::execute_with_args(&["clone"], args)?;
+
+        if CommandExecutor::is_success(&output) {
+            println!("{}", self.config.clone_repo_msg(repo_url));
+        } else {
+            let stderr = CommandExecutor::stderr_string(&output)?;
+            return Err(GitCatError::CommandFailed {
+                command: format!("clone {}", repo_url),
+                stderr,
+            });
+        }
+        Ok(())
+    }
 }
 
 impl Default for GitRepository {

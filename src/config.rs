@@ -112,4 +112,10 @@ impl Config {
             CatMood::Chaotic => format!("😺 A new cat den has been created at '{}'", path),
         }
     }
+
+    pub fn clone_repo_msg(&self, url: &str) -> String {
+        match self.catmood {
+            CatMood::Chaotic => format!("😺 Stole a new cat den from Meowland address: '{}'", url),
+        }
+    }
 }

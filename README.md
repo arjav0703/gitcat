@@ -29,3 +29,10 @@ gitcat hru # short for how are you
 ```
 
 Run `gitcat --help` to see all available commands and options.
+
+## Replace Git with Gitcat
+To make Gitcat your default git command, you can create an alias in your shell configuration file (e.g., `.bashrc`, `.zshrc`):
+
+```bash
+alias git='gitcat'
+```
