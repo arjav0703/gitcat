@@ -69,4 +69,18 @@ impl Git {
         }
         Ok(())
     }
+
+    pub async fn checkout(branch: &str) -> Result<()> {
+        let output = Command::new("git").arg("checkout").arg(branch).output()?;
+        if output.status.success() {
+            println!("😺 Pounced to branch '{}'", branch);
+        } else {
+            println!(
+                "🐾 Pouncing to branch '{}' failed:( {}",
+                branch,
+                String::from_utf8_lossy(&output.stderr)
+            );
+        }
+        Ok(())
+    }
 }

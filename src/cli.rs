@@ -32,4 +32,13 @@ pub fn cli() -> Command {
                         .trailing_var_arg(true),
                 ),
         )
+        .subcommand(
+            Command::new("pounce")
+                .about("Checkout to the specified branch.")
+                .arg(
+                    arg!([BRANCH] "The branch to checkout to")
+                        .required(true)
+                        .allow_hyphen_values(true),
+                ),
+        )
 }

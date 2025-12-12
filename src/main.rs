@@ -41,6 +41,12 @@ async fn main() -> Result<()> {
         Some(("pull", args)) => {
             Git::pull(&args.get_args()).await?;
         }
+        Some(("pounce", sub_m)) => {
+            let branch = sub_m
+                .get_one::<String>("BRANCH")
+                .expect("Branch argument is required");
+            Git::checkout(branch).await?;
+        }
         _ => unreachable!(),
     }
     Ok(())
