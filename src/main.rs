@@ -15,7 +15,7 @@ async fn main() -> Result<()> {
         std::process::exit(1);
     }
 
-    let repo = GitRepository::new();
+    let mut repo = GitRepository::new();
 
     let matches = cli::cli().get_matches();
 
@@ -58,6 +58,12 @@ async fn main() -> Result<()> {
         }
         Some(("dreams", _)) => {
             repo.show_stash_list().await?;
+        }
+        Some(("mood", mood)) => {
+            let mood_value = mood
+                .get_one::<String>("MOOD")
+                .ok_or_else(|| error::GitCatError::MissingArgument("MOOD".to_string()))?;
+            repo.set_mood(mood_value).await;
         }
         _ => unreachable!("Unhandled subcommand"),
     }

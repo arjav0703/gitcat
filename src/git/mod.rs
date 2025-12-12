@@ -185,6 +185,35 @@ impl GitRepository {
         CommandExecutor::execute_interactive(&["stash", "list"])?;
         Ok(())
     }
+
+    async fn save_config(&self) -> anyhow::Result<()> {
+        use dirs::config_dir;
+
+        let config_path = config_dir()
+            .ok_or_else(|| anyhow::anyhow!("Could not find config directory"))?
+            .join("gitcat")
+            .join("config");
+
+        tokio::fs::create_dir_all(config_path.parent().unwrap()).await?;
+        let data = self.config.catmood.to_string();
+        // dbg!(&data, &config_path);
+        tokio::fs::write(config_path, data).await?;
+        Ok(())
+    }
+
+    pub async fn set_mood(&mut self, mood: &str) -> anyhow::Result<()> {
+        match mood {
+            "chaotic" => self.config.catmood = crate::config::CatMood::Chaotic,
+            _ => {
+                return Err(anyhow::anyhow!(
+                    "Invalid mood '{}'. Supported moods: chaotic",
+                    mood
+                ));
+            }
+        }
+        self.save_config().await?;
+        Ok(())
+    }
 }
 
 impl Default for GitRepository {

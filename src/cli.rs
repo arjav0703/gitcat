@@ -82,4 +82,11 @@ pub fn cli() -> Command {
         .subcommand(Command::new("nap").about("Stash uncommitted changes"))
         .subcommand(Command::new("wake").about("Apply stashed changes"))
         .subcommand(Command::new("dreams").about("Show the list of stashed changes"))
+        .subcommand(
+            Command::new("mood").about("Set the cat mood ").arg(
+                arg!([MOOD] "Available moods: chaotic")
+                    .required(true)
+                    .allow_hyphen_values(true),
+            ),
+        )
 }
