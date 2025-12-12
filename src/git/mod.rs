@@ -113,4 +113,39 @@ impl Git {
             .output()?;
         Ok(())
     }
+
+    pub async fn stash() -> Result<()> {
+        let output = Command::new("git").arg("stash").output()?;
+        if output.status.success() {
+            println!("Your changes will be safe in my dreams 😴💤!");
+        } else {
+            println!(
+                "🐾 Stashing changes failed:( {}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+        }
+        Ok(())
+    }
+
+    pub async fn unstash() -> Result<()> {
+        let output = Command::new("git").arg("stash").arg("pop").output()?;
+        if output.status.success() {
+            println!("Welcome back to reality! Your changes are restored 😺!");
+        } else {
+            println!(
+                "🐾 Unstashing changes failed:( {}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+        }
+        Ok(())
+    }
+
+    pub async fn show_stash_list() -> Result<()> {
+        Command::new("git")
+            .arg("stash")
+            .arg("list")
+            .stdout(stdout())
+            .output()?;
+        Ok(())
+    }
 }

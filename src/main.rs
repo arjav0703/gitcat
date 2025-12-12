@@ -56,6 +56,15 @@ async fn main() -> Result<()> {
         Some(("sniff", args)) => {
             Git::diff(&args.get_args()).await?;
         }
+        Some(("nap", _)) => {
+            Git::stash().await?;
+        }
+        Some(("wake", _)) => {
+            Git::unstash().await?;
+        }
+        Some(("dreams", _)) => {
+            Git::show_stash_list().await?;
+        }
         _ => unreachable!(),
     }
     Ok(())

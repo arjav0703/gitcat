@@ -57,4 +57,7 @@ pub fn cli() -> Command {
                     .trailing_var_arg(true),
             ),
         )
+        .subcommand(Command::new("nap").about("Stash uncommitted changes"))
+        .subcommand(Command::new("wake").about("Apply stashed changes"))
+        .subcommand(Command::new("dreams").about("Show the list of stashed changes"))
 }
