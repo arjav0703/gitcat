@@ -1,8 +1,5 @@
 use anyhow::Result;
-use std::{
-    io::{stdin, stdout},
-    process::Command,
-};
+use std::{io::stdout, process::Command};
 
 mod status;
 use status::Status;

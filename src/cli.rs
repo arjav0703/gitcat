@@ -1,4 +1,17 @@
-use clap::{Command, arg};
+use clap::{ArgMatches, Command, arg};
+
+pub trait ArgMatchesExt {
+    fn get_args(&self) -> Vec<String>;
+}
+
+impl ArgMatchesExt for ArgMatches {
+    fn get_args(&self) -> Vec<String> {
+        self.get_many::<String>("ARGS")
+            .unwrap_or_default()
+            .map(|s| s.to_string())
+            .collect()
+    }
+}
 
 pub fn cli() -> Command {
     Command::new("gitcat")
