@@ -40,7 +40,13 @@ impl Git {
 
     pub async fn push(args: &[String]) -> Result<()> {
         let output = Command::new("git").arg("push").args(args).output()?;
+
         if output.status.success() {
+            if String::from_utf8_lossy(&output.stdout).contains("Everything up-to-date") {
+                println!("😺 Everything is already up-to-date in meowland!");
+                return Ok(());
+            }
+
             println!("🚀 Pushed your beautiful code to meowland!");
         } else {
             println!(
