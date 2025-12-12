@@ -1,5 +1,7 @@
-# Gitcat
+# Gitcat :3
 ![Static Badge](https://img.shields.io/badge/rust-red)
+![Static Badge](https://img.shields.io/badge/%F0%9F%90%B1-yellow)
+
 
 Gitcat is a CLI tool that wraps around git commands to provide a more fun and engaging for cat lovers UwU.
 
@@ -23,7 +25,7 @@ gitcat meow -am "your meowssage"
 ```
 2. Checking the status of your repository with a cat twist:
 ```bash
-gitcat hru
+gitcat hru # short for how are you
 ```
 
 Run `gitcat --help` to see all available commands and options.
