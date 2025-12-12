@@ -65,6 +65,12 @@ async fn main() -> Result<()> {
                 .ok_or_else(|| error::GitCatError::MissingArgument("MOOD".to_string()))?;
             let _ = repo.set_mood(mood_value).await;
         }
+        Some(("cook", directory)) => {
+            let dir_value = directory
+                .get_one::<String>("PATH")
+                .ok_or_else(|| error::GitCatError::MissingArgument("PATH".to_string()))?;
+            repo.create_repository(dir_value).await?;
+        }
         _ => unreachable!("Unhandled subcommand"),
     }
 

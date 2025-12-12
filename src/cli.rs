@@ -89,4 +89,13 @@ pub fn cli() -> Command {
                     .allow_hyphen_values(true),
             ),
         )
+        .subcommand(
+            Command::new("cook")
+                .about("Create a new repository to cook a brand new project")
+                .arg(
+                    arg!([PATH] "The path where the repository will be created")
+                        .required(true)
+                        .allow_hyphen_values(true),
+                ),
+        )
 }

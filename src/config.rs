@@ -106,4 +106,10 @@ impl Config {
             CatMood::Chaotic => "😸 Files added to the staging area! Ready to pounce >//<",
         }
     }
+
+    pub fn create_repo_msg(&self, path: &str) -> String {
+        match self.catmood {
+            CatMood::Chaotic => format!("😺 A new cat den has been created at '{}'", path),
+        }
+    }
 }

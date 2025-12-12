@@ -214,6 +214,21 @@ impl GitRepository {
         self.save_config().await?;
         Ok(())
     }
+
+    pub async fn create_repository(&self, path: &str) -> Result<()> {
+        let output = CommandExecutor::execute(&["init", path])?;
+
+        if CommandExecutor::is_success(&output) {
+            println!("{}", self.config.create_repo_msg(path));
+        } else {
+            let stderr = CommandExecutor::stderr_string(&output)?;
+            return Err(GitCatError::CommandFailed {
+                command: format!("init {}", path),
+                stderr,
+            });
+        }
+        Ok(())
+    }
 }
 
 impl Default for GitRepository {
