@@ -1,6 +1,10 @@
 [package]
 name = "gitcat"
 version = "0.1.0"
+authors = ["Arjav Jain<arjavjain0703@gmail.com"]
+description = "A cute wrapper around the git CLI"
+license = "MIT"
+repository = "https://github.com/arjavjain/gitcat"
 edition = "2024"
 
 [dependencies]
