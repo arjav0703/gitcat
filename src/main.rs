@@ -26,11 +26,21 @@ async fn main() -> Result<()> {
                 .collect();
             Git::commit(&args).await?;
         }
-        Some(("push", _)) => {
-            Git::push().await?;
+        Some(("push", args)) => {
+            let args: Vec<String> = args
+                .get_many::<String>("ARGS")
+                .unwrap_or_default()
+                .map(|s| s.to_string())
+                .collect();
+            Git::push(&args).await?;
         }
-        Some(("pull", _)) => {
-            Git::pull().await?;
+        Some(("pull", args)) => {
+            let args: Vec<String> = args
+                .get_many::<String>("ARGS")
+                .unwrap_or_default()
+                .map(|s| s.to_string())
+                .collect();
+            Git::pull(&args).await?;
         }
         _ => unreachable!(),
     }

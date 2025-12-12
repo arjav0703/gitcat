@@ -14,6 +14,22 @@ pub fn cli() -> Command {
                         .trailing_var_arg(true),
                 ),
         )
-        .subcommand(Command::new("push").about("Push commits to the default remote repository"))
-        .subcommand(Command::new("pull").about("Pull updates from the default remote repository"))
+        .subcommand(
+            Command::new("push")
+                .about("Push commits to the default remote repository")
+                .arg(
+                    arg!([ARGS] ... "Git push arguments (e.g., origin main, --force)")
+                        .allow_hyphen_values(true)
+                        .trailing_var_arg(true),
+                ),
+        )
+        .subcommand(
+            Command::new("pull")
+                .about("Pull updates from the default remote repository")
+                .arg(
+                    arg!([ARGS] ... "Git pull arguments (e.g., origin main, --rebase)")
+                        .allow_hyphen_values(true)
+                        .trailing_var_arg(true),
+                ),
+        )
 }

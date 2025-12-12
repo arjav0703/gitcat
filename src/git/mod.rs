@@ -38,8 +38,8 @@ impl Git {
         Ok(())
     }
 
-    pub async fn push() -> Result<()> {
-        let output = Command::new("git").arg("push").output()?;
+    pub async fn push(args: &[String]) -> Result<()> {
+        let output = Command::new("git").arg("push").args(args).output()?;
         if output.status.success() {
             println!("🚀 Pushed your beautiful code to meowland!");
         } else {
@@ -51,8 +51,8 @@ impl Git {
         Ok(())
     }
 
-    pub async fn pull() -> Result<()> {
-        let output = Command::new("git").arg("pull").output()?;
+    pub async fn pull(args: &[String]) -> Result<()> {
+        let output = Command::new("git").arg("pull").args(args).output()?;
         if output.status.success() {
             println!("⬇️ Fetched the latest meow updates from meowland!");
         } else {
